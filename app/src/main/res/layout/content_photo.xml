@@ -1,77 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PhotoActivity"
-    android:weightSum="1">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.skcc.abtsm.PhotoActivity"
+    tools:showIn="@layout/app_bar_main">
 
+    <Button
+        android:id="@+id/button"
+        android:layout_width="389dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Take a Picture"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="332dp"
-        android:background="#ffffff"
-        android:id="@+id/ImageContainer">
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="386dp"
+        android:layout_height="215dp"
+        app:srcCompat="@drawable/test"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="72dp"
+        tools:ignore="MissingConstraints" />
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:text="Take a Picture" />
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="78dp"
-            android:src="@drawable/test" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
+    <TextView
+        android:id="@+id/OCRbutton"
+        android:layout_width="383dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="8dp"
         android:clickable="true"
         android:onClick="processImage"
-        android:background="#167865"
-        android:id="@+id/OCRButtonContainer">
+        android:text="Run OCR"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Run OCR"
-            android:id="@+id/OCRbutton"
-            android:textSize="18dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:clickable="true"
-            android:onClick="processImage"/>
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/OCRTextView"
+        android:layout_width="410dp"
+        android:layout_height="144dp"
+        android:layout_marginBottom="8dp"
+        android:background="#dedede"
+        android:text="OCR Text will appear here"
+        android:textColor="#a3a3a3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#e4e3e3"
-        android:id="@+id/OCRTextContainer">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="OCR Text will appear here"
-            android:id="@+id/OCRTextView"
-            android:textSize="18dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:background="#dedede"
-            android:textColor="#a3a3a3" />
-    </RelativeLayout>
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
