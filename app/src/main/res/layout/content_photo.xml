@@ -6,48 +6,51 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.skcc.abtsm.PhotoActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/activity_photo">
 
     <Button
         android:id="@+id/button"
-        android:layout_width="389dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="?attr/actionBarSize"
         android:text="Take a Picture"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="386dp"
-        android:layout_height="215dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/button"
         app:srcCompat="@drawable/test"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="72dp"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp" />
 
-    <TextView
+    <Button
         android:id="@+id/OCRbutton"
-        android:layout_width="383dp"
-        android:layout_height="65dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:onClick="processImage"
         android:text="Run OCR"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <TextView
         android:id="@+id/OCRTextView"
-        android:layout_width="410dp"
-        android:layout_height="144dp"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:background="#dedede"
         android:text="OCR Text will appear here"
         android:textColor="#a3a3a3"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/OCRbutton" />
 
 </android.support.constraint.ConstraintLayout>
