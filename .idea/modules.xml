@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ABTSM_WORKSPACE.iml" filepath="$PROJECT_DIR$/ABTSM_WORKSPACE.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ABTSM_MOBILE.iml" filepath="$PROJECT_DIR$/ABTSM_MOBILE.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
