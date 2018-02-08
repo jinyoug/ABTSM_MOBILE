@@ -249,11 +249,13 @@ public class PhotoActivity extends AppCompatActivity
               ExifInterface exif = new ExifInterface(getRealPathLastImage());
               exifstore.readGeoTagImage(getRealPathLastImage());
               exifstore.showExif(exif);
+              Log.d("log1", "날짜 :" + exifstore.getDateTime(exif) + "lat : " + exifstore.getLat(exif) + "lon : " + exifstore.getLon(exif));
           } catch (IOException e) {
               e.printStackTrace();
               Toast.makeText(this, "Error!", Toast.LENGTH_LONG).show();
           }
       }
+
 
     public void processImage(View view){
         String OCRresult = null;

@@ -21,6 +21,9 @@ import java.util.Date;
 public class ExifStore {
 
     Context mContext;
+    public String dateTime;
+    private double lat;
+    private double lon;
 
     public ExifStore(Context context){
         mContext = context;
@@ -81,9 +84,9 @@ public class ExifStore {
 
         myAttribute += getTagString(ExifInterface.TAG_DATETIME, exif);
         //myAttribute += getTagString(ExifInterface.TAG_FLASH, exif);
-        myAttribute += "GPSLatitude" + gd.Latitude + "\n";
+        myAttribute += "GPSLatitude : " + gd.Latitude + "\n";
         myAttribute += getTagString(ExifInterface.TAG_GPS_LATITUDE_REF, exif);
-        myAttribute += "GPSLongitude" + gd.Longitude + "\n";
+        myAttribute += "GPSLongitude : " + gd.Longitude + "\n";
         myAttribute += getTagString(ExifInterface.TAG_GPS_LONGITUDE_REF, exif);
         //myAttribute += getTagString(ExifInterface.TAG_GPS_PROCESSING_METHOD, exif);
         //myAttribute += getTagString(ExifInterface.TAG_GPS_TIMESTAMP, exif);
@@ -101,6 +104,24 @@ public class ExifStore {
     private String getTagString(String tag, ExifInterface exif) {
         return (tag + " : " + exif.getAttribute(tag) + "\n");
     }
+
+    public String getDateTime(ExifInterface exif) {
+        dateTime = getTagString(ExifInterface.TAG_DATETIME, exif);
+        return dateTime;
+    }
+
+    public double getLat(ExifInterface exif) {
+        geoDegree gd = new geoDegree(exif);
+        lat = gd.Latitude;
+        return lat;
+    }
+
+    public double getLon(ExifInterface exif) {
+        geoDegree gd = new geoDegree(exif);
+        lon = gd.Longitude;
+        return lon;
+    }
+
 
 }
 

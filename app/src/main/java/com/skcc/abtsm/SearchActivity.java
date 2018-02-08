@@ -101,15 +101,7 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         ArrayList<Marker> MarkerList = new ArrayList<Marker>();
         ClusterManager<BTS> mClusterManager = new ClusterManager<BTS>(this, mMap);
 
-        mMap.setMinZoomPreference(10.0f);
-        mMap.setMaxZoomPreference(20.0f);
-        mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
-        mMap.getUiSettings().setMapToolbarEnabled(true);
-        mMap.getUiSettings().setZoomGesturesEnabled(true);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bound.getCenter(), 15));
 
-        //mMap.setOnCameraIdleListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -151,6 +143,15 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
             builder.include(Marker_temp.getPosition());
         }
         bound = builder.build();
+        mMap.setMinZoomPreference(10.0f);
+        mMap.setMaxZoomPreference(20.0f);
+        mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(true);
+        mMap.getUiSettings().setZoomGesturesEnabled(true);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bound.getCenter(), 15));
+
+        //mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
     }
 
 
