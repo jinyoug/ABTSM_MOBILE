@@ -225,7 +225,6 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
 
                 bts = getMetadataFromImage();
                 btsjson = gson.toJson(bts);
-                Log.d("JSON3",btsjson);
             }
         }
     }
@@ -341,7 +340,7 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                 else {
                     HttpAsyncTask httpTask = new HttpAsyncTask(PhotoActivity.this);
-                    httpTask.execute("http://hmkcode.appspot.com/jsonservlet", btsjson);
+                    httpTask.execute("http://abtsm-be.paas.sk.com/bts/enroll/09801", btsjson);
                 }
                 break;
             case R.id.button:

@@ -1,8 +1,12 @@
 package com.skcc.abtsm;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -12,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -25,6 +30,17 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 import com.skcc.abstsm.vo.BTS;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -33,6 +49,7 @@ import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
+    private static final String userID = "09801";
 
     private Marker mPerth;
     private Marker mSydney;
@@ -41,6 +58,7 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
     private BTS mSydney_BTS;
     private BTS mBrisbane_BTS;
     private int count;
+    private String ResponseMsg;
 
     private GoogleMap mMap;
 
@@ -50,6 +68,11 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        SearchActivity.HttpAsyncTask httpTask = new SearchActivity.HttpAsyncTask(SearchActivity.this);
+        httpTask.execute("http://abtsm-be.paas.sk.com/bts/d1/my/"+ userID, null);
+
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -90,8 +113,19 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
     /** Called when the map is ready. */
     @Override
     public void onMapReady(GoogleMap map) {
-        BTS BTS_temp;
+        String ssid = null;
+        Double latitude = null;
+        Double longitude = null;
+        int altitude = 0;
+        String streetAddress = null;
+        String secondaryUnit = null;
+        String enrollDate = null;
+        String modifyDate = null;
+
         Marker Marker_temp;
+        BTS BTS_temp;
+        JSONArray json = null;
+        JSONObject jobject = null;
         mMap = map;
         count = 0;
         builder = new LatLngBounds.Builder();
@@ -99,24 +133,45 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         ArrayList<BTS> BTSList = new ArrayList<BTS>();
         ArrayList<Marker> MarkerList = new ArrayList<Marker>();
         ClusterManager<BTS> mClusterManager = new ClusterManager<BTS>(this, mMap);
+        Log.d("JSONMSG", ResponseMsg);
+
+        try {
+            json = new JSONArray(ResponseMsg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 
-        /*나중에 살릴부분 new BTS에는 JsonArray로 부터 받은 값
-        for(int i=0; i<count;i++){
-            BTS_temp = new BTS("AB3234D", 37.366386, 127.106660 , 0,
-                    "분당구 첫번째", "306호", "2017-08-18", "2018-01-01")
+        /*나중에 살릴부분 new BTS에는 JsonArray로 부터 받은 값*/
+        for(int i=0; i<json.length();i++){
+            try {
+                jobject = json.getJSONObject(i);
+                ssid = jobject.getString("ssid");
+                latitude = jobject.getDouble("latitude");
+                longitude = jobject.getDouble("longitude");
+                altitude = jobject.getInt("altitude");
+                streetAddress = jobject.getString("streetAddress");
+                secondaryUnit = jobject.getString("secondaryUnit");
+                enrollDate = jobject.getString("enrollDate");
+                modifyDate = jobject.getString("modifyDate");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            BTS_temp = new BTS("09801",ssid, latitude, longitude , altitude,
+                    streetAddress, secondaryUnit, enrollDate, modifyDate);
             BTSList.add(BTS_temp);
             mClusterManager.addItem(BTS_temp);
 
-        }*/
+        }
         //나중에 지울 부분//////////
+        /*
         BTSList.add(new BTS("1111","AB3234D", 37.366386, 127.106660 , 0,
                 "분당구 첫번째", "306호", "2017-08-18", "2018-01-01"));
         BTSList.add(new BTS("1111","AB3234D", 37.365002, 127.112362 , 0,
                 "분당구 두번째", "306호", "2017-08-18", "2018-01-01"));
         BTSList.add(new BTS("1111","AB3234D", 37.374918, 127.116285 , 0,
                 "분당구 세번째", "306호", "2017-08-18", "2018-01-01"));
-
+*/
         mClusterManager.addItem(BTSList.get(0));
         mClusterManager.addItem(BTSList.get(1));
         mClusterManager.addItem(BTSList.get(2));
@@ -176,5 +231,112 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         // for the default behavior to occur (which is for the camera to move such that the
         // marker is centered and for the marker's info window to open, if it has one).
         return false;
+    }
+
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+
+        private  SearchActivity mainAct;
+
+        HttpAsyncTask(SearchActivity mainActivity) {
+            this.mainAct = mainActivity;
+        }
+        @Override
+        protected String doInBackground(String... urls) {
+            return POST(urls[0]);
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            ResponseMsg = result;       //  POST() 를 통해 Return 받은 string(Log.i("Return Result")와 동일)
+            Log.i("RESPONSE", ResponseMsg);
+            mainAct.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mainAct, "Received!", Toast.LENGTH_LONG).show();
+                    try {
+                        JSONArray json = new JSONArray(ResponseMsg);
+                        Log.i("Json Info ! ", json.toString());
+                        Log.i("Json Info2 ! ", json.toString(1));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        }
+        protected String POST(String url){
+            InputStream is;
+            String result = null;
+            try {
+                URL urlCon = new URL(url);
+                HttpURLConnection httpCon = (HttpURLConnection)urlCon.openConnection();
+
+                // ** Alternative way to convert Person object to JSON string usin Jackson Lib
+                // ObjectMapper mapper = new ObjectMapper();
+                // json = mapper.writeValueAsString(person);
+
+
+                // Set some headers to inform server about the type of the content
+                httpCon.setRequestProperty("User-Agent", "my-rest-app-v0.1");
+
+                result = "NORMAL";
+
+                // receive response as inputStream
+                try {
+                    Log.d("PLEASE1",result);
+                    is = httpCon.getInputStream();
+                    Log.d("PLEASE2",result);
+                    // convert inputstream to string
+                    if(is != null){
+                        result = convertInputStreamToString(is);
+                        Log.d("PLEASE3",result);
+                    }
+                    else {
+                        result = "Did not work!";
+                    }
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    httpCon.disconnect();
+                }
+
+            }
+            catch (IOException e) {
+                result = "FAIL";
+                e.printStackTrace();
+            }
+
+            catch (Exception e) {
+                Log.d("InputStream", e.getLocalizedMessage());
+            }
+
+            Log.i("Return Result ! ", result);
+            return result;
+        }
+
+        protected String convertInputStreamToString(InputStream inputStream) throws IOException{
+            BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+            String line = "";
+            String result = "";
+            while((line = bufferedReader.readLine()) != null)
+                result += line;
+
+            inputStream.close();
+            return result;
+        }
+
+    }
+
+    public boolean isConnected(){
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected())
+            return true;
+        else
+            return false;
     }
 }
