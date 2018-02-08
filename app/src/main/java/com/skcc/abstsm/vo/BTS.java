@@ -1,4 +1,4 @@
-package com.skcc.abtsm;
+package com.skcc.abstsm.vo;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;

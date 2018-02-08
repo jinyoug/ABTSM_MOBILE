@@ -21,7 +21,6 @@ import java.util.Date;
 public class ExifStore {
 
     Context mContext;
-
     public ExifStore(Context context){
         mContext = context;
     }
@@ -81,9 +80,9 @@ public class ExifStore {
 
         myAttribute += getTagString(ExifInterface.TAG_DATETIME, exif);
         //myAttribute += getTagString(ExifInterface.TAG_FLASH, exif);
-        myAttribute += "GPSLatitude" + gd.Latitude + "\n";
+        myAttribute += "GPSLatitude : " + gd.Latitude + "\n";
         myAttribute += getTagString(ExifInterface.TAG_GPS_LATITUDE_REF, exif);
-        myAttribute += "GPSLongitude" + gd.Longitude + "\n";
+        myAttribute += "GPSLongitude : " + gd.Longitude + "\n";
         myAttribute += getTagString(ExifInterface.TAG_GPS_LONGITUDE_REF, exif);
         //myAttribute += getTagString(ExifInterface.TAG_GPS_PROCESSING_METHOD, exif);
         //myAttribute += getTagString(ExifInterface.TAG_GPS_TIMESTAMP, exif);

@@ -14,6 +14,8 @@ import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -45,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.skcc.abtsm.BuildConfig.DEBUG;
 
@@ -52,15 +55,15 @@ import static com.skcc.abtsm.BuildConfig.DEBUG;
 public class PhotoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public String fileRealPath = null;
-
     private static final int PICK_FROM_CAMERA = 1;
     private ImageView imgview;
-    Bitmap image;
     private TessBaseAPI mTess;
-    String datapath = "";
-    public TextView metadataView;
+    private Bitmap image;
+    private String datapath = "";
+    private List<Address> list = null;
+    TextView metadataView;
 
+    private final Geocoder geocoder = new Geocoder(this);
     static final String[] IMAGE_PROJECTION = {
             MediaStore.Images.ImageColumns.DATA,
             MediaStore.Images.Thumbnails.DATA
@@ -247,6 +250,7 @@ public class PhotoActivity extends AppCompatActivity
               e.printStackTrace();
               Toast.makeText(this, "Error!", Toast.LENGTH_LONG).show();
           }
+
       }
 
     public void processImage(View view){
@@ -256,7 +260,6 @@ public class PhotoActivity extends AppCompatActivity
         OCRresult = mTess.getUTF8Text();
         TextView OCRTextView = (TextView) findViewById(R.id.OCRTextView);
         OCRTextView.setText(OCRresult);
-
 
     }
 
@@ -304,6 +307,24 @@ public class PhotoActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
-
-
+    private String ReverseGeocoding(double v1, double v2) throws IOException {
+        try {
+            list = geocoder.getFromLocation(
+                    v1, // 위도
+                    v2, // 경도
+                    10); // 얻어올 값의 개수
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("test", "입출력 오류 - 서버에서 주소변환시 에러발생");
+        }
+        if(list != null){
+            if(list.size() == 0){
+                return null;
+            }else{
+                return list.get(0).toString();
+            }
+        }else{
+            return null;
+        }
+    }
 }
