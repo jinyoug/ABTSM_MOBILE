@@ -21,10 +21,13 @@ import java.util.Date;
 public class ExifStore {
 
     Context mContext;
+<<<<<<< HEAD
+=======
     public String dateTime;
     private double lat;
     private double lon;
 
+>>>>>>> 49caa8b407ebbe236e387c7a96907060368ec7fc
     public ExifStore(Context context){
         mContext = context;
     }
@@ -40,13 +43,13 @@ public class ExifStore {
             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE,  Double.toString(location.getLongitude()));
             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, GpsInfo.longitudeRef(location.getLongitude()));
 
-            //Log.e("log1" , "exif_la0t?�치 : " +  GpsInfo.convert(location.getLatitude()));
-            //Log.e("log1" , "exif_long?�치 : " +  GpsInfo.convert(location.getLongitude()));
+            //Log.e("log1" , "exif_la0t위치 : " +  GpsInfo.convert(location.getLatitude()));
+            //Log.e("log1" , "exif_long위치 : " +  GpsInfo.convert(location.getLongitude()));
 
 
             SimpleDateFormat fmt_Exif = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
             exif.setAttribute(ExifInterface.TAG_DATETIME,fmt_Exif.format(new Date(location.getTime())));
-            Log.e("log1" , "?�?? ?�간 : " +  fmt_Exif.format(new Date(location.getTime())));
+            Log.e("log1" , "저장 시간 : " +  fmt_Exif.format(new Date(location.getTime())));
             exif.saveAttributes();
         } catch (IOException e) {
             e.printStackTrace();
@@ -84,7 +87,9 @@ public class ExifStore {
 
         myAttribute += getTagString(ExifInterface.TAG_DATETIME, exif);
         //myAttribute += getTagString(ExifInterface.TAG_FLASH, exif);
+        myAttribute += "GPSLatitude : " + gd.Latitude + "\n";
         myAttribute += getTagString(ExifInterface.TAG_GPS_LATITUDE_REF, exif);
+        myAttribute += "GPSLongitude : " + gd.Longitude + "\n";
         myAttribute += getTagString(ExifInterface.TAG_GPS_LONGITUDE_REF, exif);
         //myAttribute += getTagString(ExifInterface.TAG_GPS_PROCESSING_METHOD, exif);
         //myAttribute += getTagString(ExifInterface.TAG_GPS_TIMESTAMP, exif);
@@ -102,6 +107,24 @@ public class ExifStore {
     private String getTagString(String tag, ExifInterface exif) {
         return (tag + " : " + exif.getAttribute(tag) + "\n");
     }
+
+    public String getDateTime(ExifInterface exif) {
+        dateTime = getTagString(ExifInterface.TAG_DATETIME, exif);
+        return dateTime;
+    }
+
+    public double getLat(ExifInterface exif) {
+        geoDegree gd = new geoDegree(exif);
+        lat = gd.Latitude;
+        return lat;
+    }
+
+    public double getLon(ExifInterface exif) {
+        geoDegree gd = new geoDegree(exif);
+        lon = gd.Longitude;
+        return lon;
+    }
+
 
 }
 

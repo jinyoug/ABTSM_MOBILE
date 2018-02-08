@@ -23,7 +23,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
-import com.skcc.abstsm.vo.BTS;
 
 import java.util.ArrayList;
 
@@ -101,21 +100,21 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         ClusterManager<BTS> mClusterManager = new ClusterManager<BTS>(this, mMap);
 
 
-        /*나중에 살릴부분 new BTS에는 JsonArray로 부터 받은 값
+        /*?�중?? ?�릴부�? new BTS?�는 JsonArray�? 부?? 받�? �?
         for(int i=0; i<count;i++){
             BTS_temp = new BTS("AB3234D", 37.366386, 127.106660 , 0,
-                    "분당구 첫번째", "306호", "2017-08-18", "2018-01-01")
+                    "분당�? 첫번�?", "306??", "2017-08-18", "2018-01-01")
             BTSList.add(BTS_temp);
             mClusterManager.addItem(BTS_temp);
 
         }*/
-        //나중에 지울 부분//////////
+        //?�중?? 지?? 부�?//////////
         BTSList.add(new BTS("AB3234D", 37.366386, 127.106660 , 0,
-                "분당구 첫번째", "306호", "2017-08-18", "2018-01-01"));
+                "분당�? 첫번�?", "306??", "2017-08-18", "2018-01-01"));
         BTSList.add(new BTS("AB3234D", 37.365002, 127.112362 , 0,
-                "분당구 두번째", "306호", "2017-08-18", "2018-01-01"));
+                "분당�? ?�번�?", "306??", "2017-08-18", "2018-01-01"));
         BTSList.add(new BTS("AB3234D", 37.374918, 127.116285 , 0,
-                "분당구 세번째", "306호", "2017-08-18", "2018-01-01"));
+                "분당�? ?�번�?", "306??", "2017-08-18", "2018-01-01"));
 
         mClusterManager.addItem(BTSList.get(0));
         mClusterManager.addItem(BTSList.get(1));
