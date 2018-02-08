@@ -101,25 +101,6 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         ArrayList<Marker> MarkerList = new ArrayList<Marker>();
         ClusterManager<BTS> mClusterManager = new ClusterManager<BTS>(this, mMap);
 
-        mMap.setMinZoomPreference(10.0f);
-        mMap.setMaxZoomPreference(20.0f);
-        mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
-        mMap.getUiSettings().setMapToolbarEnabled(true);
-        mMap.getUiSettings().setZoomGesturesEnabled(true);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bound.getCenter(), 15));
-
-        //mMap.setOnCameraIdleListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-            mMap.setMyLocationEnabled(true);
-            // Show rationale and request permission.
-        }
-        // Set a listener for marker click.
-        mMap.setOnMarkerClickListener(this);
 
         /*나중에 살릴부분 new BTS에는 JsonArray로 부터 받은 값
         for(int i=0; i<count;i++){
@@ -151,6 +132,26 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
             builder.include(Marker_temp.getPosition());
         }
         bound = builder.build();
+
+        mMap.setMinZoomPreference(10.0f);
+        mMap.setMaxZoomPreference(20.0f);
+        mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(true);
+        mMap.getUiSettings().setZoomGesturesEnabled(true);
+
+        //mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+            mMap.setMyLocationEnabled(true);
+            // Show rationale and request permission.
+        }
+        // Set a listener for marker click.
+        mMap.setOnMarkerClickListener(this);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bound.getCenter(), 15));
     }
 
 

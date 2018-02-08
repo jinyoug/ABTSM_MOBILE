@@ -3,14 +3,18 @@ package com.skcc.abtsm;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,6 +28,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -65,7 +70,7 @@ public class PhotoActivity extends AppCompatActivity
         image = BitmapFactory.decodeResource(getResources(), R.drawable.test);
 
         //initialize Tesseract API
-        String language = "kor";
+        String language = "eng";
         datapath = getFilesDir()+ "/tesseract/";
         mTess = new TessBaseAPI();
         checkFile(new File(datapath + "tessdata/"));
@@ -76,6 +81,7 @@ public class PhotoActivity extends AppCompatActivity
 
                 // call the camera
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString());
 
                 // image size for cutting
@@ -149,6 +155,7 @@ public class PhotoActivity extends AppCompatActivity
         if (requestCode == PICK_FROM_CAMERA) {
             Bundle extras = data.getExtras();
             if (extras != null) {
+                //나중에 테스트
                 Bitmap photo = extras.getParcelable("data");
                 imgview.setImageBitmap(photo);
                 image = extras.getParcelable("data");
@@ -158,11 +165,15 @@ public class PhotoActivity extends AppCompatActivity
 
     public void processImage(View view){
         String OCRresult = null;
+        Uri path;
         mTess.setImage(image);
         OCRresult = mTess.getUTF8Text();
         TextView OCRTextView = (TextView) findViewById(R.id.OCRTextView);
         OCRTextView.setText(OCRresult);
+
+
     }
+
 
     private void checkFile(File dir) {
         if (!dir.exists()&& dir.mkdirs()){
@@ -180,10 +191,10 @@ public class PhotoActivity extends AppCompatActivity
 
     private void copyFiles() {
         try {
-            String filepath = datapath + "/tessdata/kor.traineddata";
+            String filepath = datapath + "/tessdata/eng.traineddata";
             AssetManager assetManager = getAssets();
 
-            InputStream instream = assetManager.open("tessdata/kor.traineddata");
+            InputStream instream = assetManager.open("tessdata/eng.traineddata");
             OutputStream outstream = new FileOutputStream(filepath);
 
             byte[] buffer = new byte[1024];
