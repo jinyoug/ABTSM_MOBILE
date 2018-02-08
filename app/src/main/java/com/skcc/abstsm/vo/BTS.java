@@ -8,6 +8,7 @@ import com.google.maps.android.clustering.ClusterItem;
  */
 public class BTS implements ClusterItem {
 
+    private String id;
     private String ssid;
     private double latitude;      //위도
     private double longitude;   //경도
@@ -18,7 +19,8 @@ public class BTS implements ClusterItem {
     private String enrollDate;
     private String modifyDate;
 
-    public BTS(String ssid, double latitude, double longitude, int altitude, String streetAaddress, String secondaryUnit, String enrollDate, String modifyDate) {
+    public BTS(String id, String ssid, double latitude, double longitude, int altitude, String streetAaddress, String secondaryUnit, String enrollDate, String modifyDate) {
+        this.id = id;
         this.ssid = ssid;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -97,5 +99,13 @@ public class BTS implements ClusterItem {
 
     public void setModifyDate(String modifyDate) {
         this.modifyDate = modifyDate;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

@@ -1,10 +1,11 @@
 package com.skcc.abtsm;
 
+import com.google.gson.Gson;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.skcc.abstsm.vo.BTS;
 import com.skcc.abstsm.vo.ExifStore;
-import com.skcc.abstsm.vo.ImageInfo;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
@@ -19,10 +20,7 @@ import android.location.Geocoder;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -38,9 +36,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,9 +44,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.skcc.abtsm.BuildConfig.DEBUG;
-
 
 public class PhotoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -61,7 +54,9 @@ public class PhotoActivity extends AppCompatActivity
     private Bitmap image;
     private String datapath = "";
     private List<Address> list = null;
-    TextView metadataView;
+    private String OCRresult = null;
+    public TextView metadataView;
+    public BTS mBTS;
 
     private final Geocoder geocoder = new Geocoder(this);
     static final String[] IMAGE_PROJECTION = {
@@ -207,6 +202,10 @@ public class PhotoActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        BTS bts;
+        Gson gson = new Gson();
+        String btsjson = null;
+
 
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_FROM_CAMERA && resultCode == RESULT_OK) {
@@ -219,10 +218,13 @@ public class PhotoActivity extends AppCompatActivity
                 imgview.setImageBitmap(photo);
                 image = (Bitmap)extras.get("data");
 
-                getMetadataFromImage();
+                bts = getMetadataFromImage();
+                btsjson = gson.toJson(bts);
+                Log.d("JSON3",btsjson);
 
             }
         }
+
     }
 
 
@@ -240,30 +242,31 @@ public class PhotoActivity extends AppCompatActivity
           return szDateTop;
       }
 
-      public void getMetadataFromImage(){
+      public BTS getMetadataFromImage(){
+          String date = null;
+          String streetAaddress = null;
+          double lat = 0;
+          double lon = 0;
           try {
               ExifStore exifstore = new ExifStore(this);
               ExifInterface exif = new ExifInterface(getRealPathLastImage());
               exifstore.readGeoTagImage(getRealPathLastImage());
               exifstore.showExif(exif);
-              Log.d("log1", "날짜 :" + exifstore.getDateTime(exif) + "lat : " + exifstore.getLat(exif) + "lon : " + exifstore.getLon(exif));
+              date = exifstore.getDateTime(exif);
+              lat =  exifstore.getLat(exif);
+              lon = exifstore.getLon(exif);
+              streetAaddress = ReverseGeocoding(lat,lon);
+              mTess.setImage(image);
+              OCRresult = mTess.getUTF8Text();
+
+              mBTS = new BTS("1111",OCRresult, lat, lon, 0, streetAaddress, "상세주소", date, date);
+              Log.d("BTS", "SSID :" + mBTS.getSsid() +"날짜 :" + mBTS.getEnrollDate() + "lat : " + mBTS.getLatitude() + "lon : " + mBTS.getLongitude() +"주소"+ mBTS.getStreetAaddress());
           } catch (IOException e) {
               e.printStackTrace();
               Toast.makeText(this, "Error!", Toast.LENGTH_LONG).show();
           }
-
+          return mBTS;
       }
-
-
-    public void processImage(View view){
-        String OCRresult = null;
-        Uri path;
-        mTess.setImage(image);
-        OCRresult = mTess.getUTF8Text();
-        TextView OCRTextView = (TextView) findViewById(R.id.OCRTextView);
-        OCRTextView.setText(OCRresult);
-
-    }
 
 
     private void checkFile(File dir) {
@@ -293,8 +296,6 @@ public class PhotoActivity extends AppCompatActivity
             while ((read = instream.read(buffer)) != -1) {
                 outstream.write(buffer, 0, read);
             }
-
-
             outstream.flush();
             outstream.close();
             instream.close();
@@ -320,13 +321,8 @@ public class PhotoActivity extends AppCompatActivity
             Log.e("test", "입출력 오류 - 서버에서 주소변환시 에러발생");
         }
         if(list != null){
-            if(list.size() == 0){
-                return null;
-            }else{
-                return list.get(0).toString();
-            }
-        }else{
-            return null;
-        }
+            if(list.size() == 0){return null;}
+            else{return list.get(0).toString();}
+        }else{return null;}
     }
 }
