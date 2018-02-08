@@ -29,5 +29,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.rmtheis:tess-two:5.4.1'
+    compile 'gun0912.ted:tedpermission:2.1.0'
     compile 'com.google.maps.android:android-maps-utils:0.4'
+
 }

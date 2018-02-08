@@ -1,13 +1,20 @@
 package com.skcc.abtsm;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+import com.skcc.abstsm.vo.ExifStore;
+import com.skcc.abstsm.vo.ImageInfo;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,29 +34,72 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+
+import static com.skcc.abtsm.BuildConfig.DEBUG;
 
 
 public class PhotoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    public String fileRealPath = null;
 
     private static final int PICK_FROM_CAMERA = 1;
     private ImageView imgview;
     Bitmap image;
     private TessBaseAPI mTess;
     String datapath = "";
+    public TextView metadataView;
+
+    static final String[] IMAGE_PROJECTION = {
+            MediaStore.Images.ImageColumns.DATA,
+            MediaStore.Images.Thumbnails.DATA
+    };
+
+    final Uri uriImages = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+    String szDateTop = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                Toast.makeText(PhotoActivity.this, "Permission Granted", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                Toast.makeText(PhotoActivity.this, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+
+        };
+
+        TedPermission.with(this)
+                .setPermissionListener(permissionlistener)
+                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                .setPermissions(Manifest.permission.READ_CONTACTS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE)
+                .check();
+
         setContentView(R.layout.activity_photo);
+
+
+        metadataView = (TextView) findViewById(R.id.ImageInfoView);
+
+        String filename = getExternalFilesDir(null) + "/pic.jpg";
 
         imgview = (ImageView) findViewById(R.id.imageView);
         Button buttonCamera = (Button) findViewById(R.id.button);
@@ -97,8 +147,10 @@ public class PhotoActivity extends AppCompatActivity
                 } catch (ActivityNotFoundException e) {
                     // Do nothing for now
                 }
+
             }
         });
+
     }
 
     @Override
@@ -152,16 +204,50 @@ public class PhotoActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_FROM_CAMERA) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_FROM_CAMERA && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
+
+            String tempPath = "";
+
             if (extras != null) {
-                //나중에 테스트
                 Bitmap photo = extras.getParcelable("data");
                 imgview.setImageBitmap(photo);
-                image = extras.getParcelable("data");
+                image = (Bitmap)extras.get("data");
+
+                getMetadataFromImage();
+
             }
         }
     }
+
+
+      public String getRealPathLastImage(){
+
+          try{
+              final Cursor cursorImages = getContentResolver().query(uriImages, IMAGE_PROJECTION, null, null, null);
+              if(cursorImages != null && cursorImages.moveToLast()){
+                  szDateTop = cursorImages.getString(0);
+                  cursorImages.close();
+              }
+          }catch(Exception e){
+              e.printStackTrace();
+          }
+          return szDateTop;
+      }
+
+      public void getMetadataFromImage(){
+          try {
+              ExifStore exifstore = new ExifStore(this);
+              ExifInterface exif = new ExifInterface(getRealPathLastImage());
+              exifstore.readGeoTagImage(getRealPathLastImage());
+              exifstore.showExif(exif);
+          } catch (IOException e) {
+              e.printStackTrace();
+              Toast.makeText(this, "Error!", Toast.LENGTH_LONG).show();
+          }
+      }
 
     public void processImage(View view){
         String OCRresult = null;
@@ -218,4 +304,6 @@ public class PhotoActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
+
+
 }
