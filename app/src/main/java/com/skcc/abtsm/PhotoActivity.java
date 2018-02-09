@@ -347,21 +347,7 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                 else {
                     HttpAsyncTask httpTask = new HttpAsyncTask(PhotoActivity.this);
-                    httpTask.execute("http://abtsm-be.paas.sk.com/bts/d1/enroll/"+ userID, btsjson);
-
-                    try {
-                        json = new JSONArray(ResponseMsg);
-                        jobject = json.getJSONObject(0);
-                        status = jobject.getInt("status");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if(status == 200){
-                    Toast.makeText(getBaseContext(), "Duplicated BTS ID", Toast.LENGTH_LONG).show();
-                    Intent intent = getIntent();
-                    finish();
-                    startActivity(intent);
+                    httpTask.execute("http://abtsm-be.paas.sk.com/bts/d1/enroll/" + userID, btsjson);
                 }
                 break;
             case R.id.button:
@@ -409,12 +395,23 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
                 @Override
                 public void run() {
                     Toast.makeText(mainAct, "Received!", Toast.LENGTH_LONG).show();
+                    JSONObject jobject = null;
                     try {
                         JSONArray json = new JSONArray(ResponseMsg);
+                        jobject = json.getJSONObject(0);
+                        status = jobject.getInt("status");
                         Log.i("Json Info ! ", json.toString());
                         Log.i("Json Info2 ! ", json.toString(1));
                     } catch (JSONException e) {
                         e.printStackTrace();
+                    }
+                    finally {
+                        if(status == 200){
+                            Toast.makeText(getBaseContext(), "Duplicated BTS ID", Toast.LENGTH_LONG).show();
+                            Intent intent = getIntent();
+                            finish();
+                            startActivity(intent);
+                        }
                     }
                 }
             });
