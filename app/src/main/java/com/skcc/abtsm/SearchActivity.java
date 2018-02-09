@@ -1,16 +1,12 @@
 package com.skcc.abtsm;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -38,7 +34,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -51,13 +46,6 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
     private static final String userID = "09801";
 
-    private Marker mPerth;
-    private Marker mSydney;
-    private Marker mBrisbane;
-    private BTS mPerth_BTS;
-    private BTS mSydney_BTS;
-    private BTS mBrisbane_BTS;
-    private int count;
     private String ResponseMsg;
 
     private GoogleMap mMap;
@@ -127,7 +115,6 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         JSONArray json = null;
         JSONObject jobject = null;
         mMap = map;
-        count = 0;
         builder = new LatLngBounds.Builder();
 
         ArrayList<BTS> BTSList = new ArrayList<BTS>();
@@ -163,15 +150,6 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
             mClusterManager.addItem(BTS_temp);
 
         }
-        //나중에 지울 부분//////////
-        /*
-        BTSList.add(new BTS("1111","AB3234D", 37.366386, 127.106660 , 0,
-                "분당구 첫번째", "306호", "2017-08-18", "2018-01-01"));
-        BTSList.add(new BTS("1111","AB3234D", 37.365002, 127.112362 , 0,
-                "분당구 두번째", "306호", "2017-08-18", "2018-01-01"));
-        BTSList.add(new BTS("1111","AB3234D", 37.374918, 127.116285 , 0,
-                "분당구 세번째", "306호", "2017-08-18", "2018-01-01"));
-*/
         mClusterManager.addItem(BTSList.get(0));
         mClusterManager.addItem(BTSList.get(1));
         mClusterManager.addItem(BTSList.get(2));
@@ -285,9 +263,7 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
 
                 // receive response as inputStream
                 try {
-                    Log.d("PLEASE1",result);
                     is = httpCon.getInputStream();
-                    Log.d("PLEASE2",result);
                     // convert inputstream to string
                     if(is != null){
                         result = convertInputStreamToString(is);

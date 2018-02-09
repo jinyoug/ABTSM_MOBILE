@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -59,7 +60,10 @@ import java.util.List;
 public class PhotoActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private static final int PICK_FROM_CAMERA = 1;
+    private static final String userID = "09801";
     private static final String language = "eng";
+    private int status=0;
+    private String ResponseMsg;
     private ImageView imgview;
     private TessBaseAPI mTess;
     private Bitmap image;
@@ -261,7 +265,7 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
               mTess.setImage(image);
               OCRresult = mTess.getUTF8Text();
 
-              mBTS = new BTS("1111",OCRresult, lat, lon, 0, streetAaddress, "상세주소", date, date);
+              mBTS = new BTS(userID,OCRresult, lat, lon, 0, streetAaddress, "상세주소", date, date);
               Log.d("BTS", "SSID :" + mBTS.getSsid() +"날짜 :" + mBTS.getEnrollDate() + "lat : " + mBTS.getLatitude() + "lon : " + mBTS.getLongitude() +"주소"+ mBTS.getStreetAaddress());
           } catch (IOException e) {
               e.printStackTrace();
@@ -334,13 +338,30 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
 
     @Override
     public void onClick(View view) {
+        JSONArray json = null;
+        JSONObject jobject = null;
+        int status = 0;
         switch(view.getId()){
             case R.id.OCRbutton:
                 if(!validate())
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                 else {
                     HttpAsyncTask httpTask = new HttpAsyncTask(PhotoActivity.this);
-                    httpTask.execute("http://abtsm-be.paas.sk.com/bts/enroll/09801", btsjson);
+                    httpTask.execute("http://abtsm-be.paas.sk.com/bts/d1/enroll/"+ userID, btsjson);
+
+                    try {
+                        json = new JSONArray(ResponseMsg);
+                        jobject = json.getJSONObject(0);
+                        status = jobject.getInt("status");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(status == 200){
+                    Toast.makeText(getBaseContext(), "Duplicated BTS ID", Toast.LENGTH_LONG).show();
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
                 }
                 break;
             case R.id.button:
@@ -368,7 +389,7 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
 
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
 
-        private   PhotoActivity mainAct;
+        private  PhotoActivity mainAct;
 
         HttpAsyncTask(PhotoActivity mainActivity) {
             this.mainAct = mainActivity;
@@ -377,64 +398,61 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
         protected String doInBackground(String... urls) {
             return POST(urls[0],urls[1]);
         }
-        /*
+
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            strJson = result;       //  POST() 를 통해 Return 받은 string(Log.i("Return Result")와 동일)
-            Log.i("strJson", strJson);
+            ResponseMsg = result;       //  POST() 를 통해 Return 받은 string(Log.i("Return Result")와 동일)
+            Log.i("RESPONSE", ResponseMsg);
             mainAct.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(mainAct, "Received!", Toast.LENGTH_LONG).show();
                     try {
-                        JSONArray json = new JSONArray(strJson);
+                        JSONArray json = new JSONArray(ResponseMsg);
                         Log.i("Json Info ! ", json.toString());
                         Log.i("Json Info2 ! ", json.toString(1));
-                        mainAct.tvResponse.setText(json.toString(1));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
             });
 
-        }*/
-        protected String POST(String url, String jsonstring){
-            InputStream is = null;
-            String result = "";
+        }
+        protected String POST(String url, String btsjson){
+            InputStream is;
+            String result = null;
             try {
                 URL urlCon = new URL(url);
                 HttpURLConnection httpCon = (HttpURLConnection)urlCon.openConnection();
 
-                Log.i("Json Information ! ", jsonstring);
-
-                // ** Alternative way to convert Person object to JSON string usin Jackson Lib
-                // ObjectMapper mapper = new ObjectMapper();
-                // json = mapper.writeValueAsString(person);
-
-
                 // Set some headers to inform server about the type of the content
+                httpCon.setRequestProperty("User-Agent", "my-rest-app-v0.1");
                 httpCon.setRequestProperty("Accept", "application/json");
-                httpCon.setRequestProperty("Content-type", "application/json");
+                httpCon.setRequestProperty("Content-type", "application/json; charset=euc-kr");
 
                 // OutputStream으로 POST 데이터를 넘겨주겠다는 옵션.
                 httpCon.setDoOutput(true);
                 // InputStream으로 서버로 부터 응답을 받겠다는 옵션.
                 httpCon.setDoInput(true);
 
+                httpCon.connect();
+
                 OutputStream os = httpCon.getOutputStream();
-                os.write(jsonstring.getBytes("euc-kr"));
+                Log.d("BTSJSON",btsjson);
+                os.write(btsjson.getBytes("euc-kr"));
                 os.flush();
-                Log.i("Json Information2 ! ", jsonstring);
-                result = "SUCCESS";
-                /*
+
+                result = "NORMAL";
+
                 // receive response as inputStream
                 try {
                     is = httpCon.getInputStream();
                     // convert inputstream to string
                     if(is != null){
                         result = convertInputStreamToString(is);
+                        Log.d("PLEASE3",result);
                     }
                     else {
                         result = "Did not work!";
@@ -446,20 +464,18 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
                 finally {
                     httpCon.disconnect();
                 }
-                */
+
             }
             catch (IOException e) {
                 result = "FAIL";
                 e.printStackTrace();
             }
-            /*
+
             catch (Exception e) {
                 Log.d("InputStream", e.getLocalizedMessage());
             }
 
             Log.i("Return Result ! ", result);
-            */
-            metadataView.setText(jsonstring);
             return result;
         }
 
