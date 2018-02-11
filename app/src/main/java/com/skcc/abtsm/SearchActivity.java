@@ -58,7 +58,7 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
         super.onCreate(savedInstanceState);
 
         SearchActivity.HttpAsyncTask httpTask = new SearchActivity.HttpAsyncTask(SearchActivity.this);
-        httpTask.execute("http://abtsm-be.paas.sk.com/bts/d1/my/"+ userID, null);
+        httpTask.execute("http://abtsm-backend-responsible-panther.paas.sk.com/bts/d1/my/"+ userID, null);
 
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

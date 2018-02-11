@@ -386,7 +386,7 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
                     btsjson = mBTS.toString();
                     Log.i("Send-userID",userID);
                     Log.i("Send-btsjson",btsjson);
-                    httpTask.execute("http://abtsm-be.paas.sk.com/bts/d1/enroll/" + userID, btsjson);
+                    httpTask.execute("http://abtsm-backend-responsible-panther.paas.sk.com/bts/d1/enroll/" + userID, btsjson);
                 }
                 break;
             case R.id.btn_camera:
