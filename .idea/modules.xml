@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ABTSM_MOBILE.iml" filepath="$PROJECT_DIR$/ABTSM_MOBILE.iml" />
+      <module fileurl="file://C:\Users\khjk3\Documents\SKCC_Project\ABTSM_MOBILE\ABTSM_MOBILE.iml" filepath="C:\Users\khjk3\Documents\SKCC_Project\ABTSM_MOBILE\ABTSM_MOBILE.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\khjk3\Documents\SKCC_Project\ABTSM_MOBILE\app\app.iml" filepath="C:\Users\khjk3\Documents\SKCC_Project\ABTSM_MOBILE\app\app.iml" />
     </modules>
   </component>
 </project>

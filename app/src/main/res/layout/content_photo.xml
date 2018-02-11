@@ -9,108 +9,165 @@
     tools:layout_editor_absoluteY="25dp">
     <!--tools:showIn="@layout/activity_photo">-->
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_below="@+id/login_title"
-        android:layout_marginBottom="24dp"
-        android:layout_marginTop="?attr/actionBarSize"
-        app:layout_constraintBottom_toBottomOf="@+id/btn_camera"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/picture"
-        tools:ignore="MissingConstraints" />
-
-    <ImageButton
-        android:id="@+id/btn_camera"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="228dp"
-        android:background="@drawable/plus"
-        android:elevation="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="32dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_camera">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
+
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="200dp"
+            android:background="@drawable/picture_box"
+            android:layout_marginRight="35dp"
+            android:layout_marginLeft="35dp"
+            android:layout_marginTop="120dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="10">
 
-            <EditText
-                android:id="@+id/et_bts_id"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:hint="BTS-ID"
-                android:singleLine="true"
-                android:textSize="10sp" />
-        </android.support.design.widget.TextInputLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:layout_margin="10dp"
+                android:background="@drawable/white_border">
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"/>
+            </LinearLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_weight="5">
+                <ImageButton
+                    android:id="@+id/btn_camera"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/new_plus"
+                    android:elevation="4dp" />
+            </LinearLayout>
 
-            <EditText
-                android:id="@+id/et_latitude"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:hint="위도/경도"
-                android:singleLine="true"
-                android:textSize="10sp" />
-        </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <!--<ImageView-->
+            <!--android:id="@+id/imageView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="180dp"-->
+            <!--android:layout_below="@+id/login_title"-->
+            <!--android:layout_marginLeft="35dp"-->
+            <!--android:layout_marginRight="35dp"-->
+            <!--android:layout_marginBottom="24dp"-->
+            <!--android:layout_marginTop="?attr/actionBarSize"-->
+            <!--app:layout_constraintBottom_toTopOf="@+id/linearLayout"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:srcCompat="@drawable/picture_box"-->
+            <!--tools:ignore="MissingConstraints" />-->
 
-            <EditText
-                android:id="@+id/et_address"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:hint="주소"
-                android:singleLine="true"
-                android:textSize="10sp" />
-        </android.support.design.widget.TextInputLayout>
+        <!--<ImageButton-->
+            <!--android:id="@+id/btn_camera"-->
+            <!--android:layout_width="50dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_marginTop="228dp"-->
+            <!--android:background="@drawable/new_plus"-->
+            <!--android:elevation="4dp"-->
+            <!--app:layout_constraintTop_toBottomOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/et_address_detail"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:hint="상세주소"
-                android:singleLine="true"
-                android:textSize="10sp" />
-        </android.support.design.widget.TextInputLayout>
-
-        <Button
-            android:id="@+id/btn_send"
+        <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:background="#ea1f44"
-            android:clickable="true"
-            android:text="전송"
-            android:textAllCaps="false"
-            android:textColor="#fff"
-            android:textSize="10sp" />
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="32dp"
+            android:paddingRight="35dp"
+            android:paddingLeft="35dp"
+            android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp">
+
+                <EditText
+                    android:id="@+id/et_bts_id"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="BTS-ID"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp">
+
+                <EditText
+                    android:id="@+id/et_latitude"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="위도/경도"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp">
+
+                <EditText
+                    android:id="@+id/et_address"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="주소"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp">
+
+                <EditText
+                    android:id="@+id/et_address_detail"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="상세주소"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_send"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:background="#ea1f44"
+                android:clickable="true"
+                android:text="전송"
+                android:textAllCaps="false"
+                android:textColor="#fff"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+
     </LinearLayout>
+
 
 
 </android.support.constraint.ConstraintLayout>
