@@ -1,6 +1,7 @@
 package com.skcc.abtsm;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -10,7 +11,6 @@ import com.skcc.abstsm.vo.ExifStore;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.database.Cursor;
@@ -36,6 +36,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,6 +76,11 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
     public String strJson = null;
     public TextView metadataView;
     public BTS mBTS;
+
+    private EditText etBtsId;
+    private EditText etAddress;
+    private EditText etAddressDetail;
+    private EditText etLatitude;
 
     private final Geocoder geocoder = new Geocoder(this);
     static final String[] IMAGE_PROJECTION = {
@@ -119,13 +126,20 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
         metadataView = (TextView) findViewById(R.id.ImageInfoView);
         imgview = (ImageView) findViewById(R.id.imageView);
 
-        Button buttonCamera = (Button) findViewById(R.id.button);
-        Button OcrButton = (Button)findViewById(R.id.OCRbutton);
+        //Button Listener
+        ImageButton buttonCamera = (ImageButton) findViewById(R.id.btn_camera);
+        Button buttonSend = (Button)findViewById(R.id.btn_send);
         tvResponse = (TextView)findViewById(R.id.OCRTextView);
         buttonCamera.setOnClickListener(this);
-        OcrButton.setOnClickListener(this);
+        buttonSend.setOnClickListener(this);
 
-                /*
+
+        etBtsId= (EditText)findViewById(R.id.et_bts_id);
+        etAddress= (EditText)findViewById(R.id.et_address);
+        etAddressDetail= (EditText)findViewById(R.id.et_address_detail);
+        etLatitude= (EditText)findViewById(R.id.et_latitude);
+
+        /*
         * ActionBar 동작
         */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -147,9 +161,6 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
         else{
             Toast.makeText(this, "You are disconnected", Toast.LENGTH_LONG).show();
         }
-
-
-
 
         //init image
         image = BitmapFactory.decodeResource(getResources(), R.drawable.test);
@@ -193,9 +204,11 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
 
         if (id == R.id.nav_camera) {
             Intent intent = new Intent(this,PhotoActivity.class);
+            finish();
             startActivity(intent);
         } else if (id == R.id.nav_gallery) {
             Intent intent = new Intent(this, SearchActivity.class);
+            finish();
             startActivity(intent);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -215,8 +228,7 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         BTS bts;
-        Gson gson = new Gson();
-
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_FROM_CAMERA && resultCode == RESULT_OK) {
@@ -227,12 +239,26 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
                 imgview.setImageBitmap(photo);
                 image = (Bitmap)extras.get("data");
 
-                bts = getMetadataFromImage();
-                btsjson = gson.toJson(bts);
+                getMetadataFromImage();             //Meta Data 읽기 > 메소드 내에서 mBTS에 값 Setting
+                mBTS.setSsid(processImage());       //TODO : ID 읽어오는 코드 수정 요망 - 필수는 아니니까
+                btsjson = mBTS.toString();
+
+                etBtsId.setText(mBTS.getSsid());
+                etAddress.setText(mBTS.getStreetAaddress());
+                etLatitude.setText(mBTS.getLatitude() + "/"+mBTS.getLongitude());
+
+                Log.i("gson",btsjson);
             }
         }
     }
 
+
+    private String processImage(){
+        String OCRresult = null;
+        mTess.setImage(image);
+        OCRresult = mTess.getUTF8Text();
+        return OCRresult;
+    }
 
       public String getRealPathLastImage(){
 
@@ -265,7 +291,7 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
               mTess.setImage(image);
               OCRresult = mTess.getUTF8Text();
 
-              mBTS = new BTS(userID,OCRresult, lat, lon, 0, streetAaddress, "상세주소", date, date);
+              mBTS = new BTS(userID,OCRresult, lat, lon, 0, ReverseGeocoding(lat,lon), "상세주소", exif.getAttribute(ExifInterface.TAG_DATETIME), exif.getAttribute(ExifInterface.TAG_DATETIME));
               Log.d("BTS", "SSID :" + mBTS.getSsid() +"날짜 :" + mBTS.getEnrollDate() + "lat : " + mBTS.getLatitude() + "lon : " + mBTS.getLongitude() +"주소"+ mBTS.getStreetAaddress());
           } catch (IOException e) {
               e.printStackTrace();
@@ -327,7 +353,9 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
         }
         if(list != null){
             if(list.size() == 0){return null;}
-            else{return list.get(0).toString();}
+            else{
+                return list.get(0).getAddressLine(0);
+            }
         }else{return null;}
     }
 
@@ -342,15 +370,22 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
         JSONObject jobject = null;
         int status = 0;
         switch(view.getId()){
-            case R.id.OCRbutton:
+            case R.id.btn_send:
+
                 if(!validate())
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                 else {
                     HttpAsyncTask httpTask = new HttpAsyncTask(PhotoActivity.this);
+                    mBTS.setSsid(etBtsId.getText().toString());
+                    mBTS.setStreetAaddress(etAddress.getText().toString());
+                    mBTS.setSecondaryUnit(etAddressDetail.getText().toString());
+                    btsjson = mBTS.toString();
+                    Log.i("Send-userID",userID);
+                    Log.i("Send-btsjson",btsjson);
                     httpTask.execute("http://abtsm-be.paas.sk.com/bts/d1/enroll/" + userID, btsjson);
                 }
                 break;
-            case R.id.button:
+            case R.id.btn_camera:
                 // call the camera
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -393,26 +428,28 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
             Log.i("RESPONSE", ResponseMsg);
             mainAct.runOnUiThread(new Runnable() {
                 @Override
-                public void run() {
-                    Toast.makeText(mainAct, "Received!", Toast.LENGTH_LONG).show();
-                    JSONObject jobject = null;
-                    try {
-                        JSONArray json = new JSONArray(ResponseMsg);
-                        jobject = json.getJSONObject(0);
-                        status = jobject.getInt("status");
-                        Log.i("Json Info ! ", json.toString());
-                        Log.i("Json Info2 ! ", json.toString(1));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    finally {
-                        if(status == 200){
-                            Toast.makeText(getBaseContext(), "Duplicated BTS ID", Toast.LENGTH_LONG).show();
-                            Intent intent = getIntent();
-                            finish();
-                            startActivity(intent);
-                        }
-                    }
+                public void run(){
+                    //TODO : Return MSG 확인 > BackEnd 현재 올라간 버전 확인 후 ReturnMSG에 따라 처리 진행 일단 다른 SearchActivity로 이동
+                    Intent intent = new Intent(mainAct,SearchActivity.class);
+                    finish();
+                    startActivity(intent);
+//                    Toast.makeText(mainAct, "Received!", Toast.LENGTH_LONG).show();
+//                    try {
+//                        JSONObject json = new JSONObject(ResponseMsg);
+//                        status = json.getInt("status");
+//                        Log.i("Json Info ! ", json.toString());
+//                        Log.i("Json Info2 ! ", json.toString(1));
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                    finally {
+//                        if(status == 200){
+//                            Toast.makeText(getBaseContext(), "Duplicated BTS ID", Toast.LENGTH_LONG).show();
+//                            Intent intent = getIntent();
+//                            finish();
+//                            startActivity(intent);
+//                        }
+//                    }
                 }
             });
 
@@ -423,11 +460,11 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
             try {
                 URL urlCon = new URL(url);
                 HttpURLConnection httpCon = (HttpURLConnection)urlCon.openConnection();
+                httpCon.setRequestMethod("POST");
 
                 // Set some headers to inform server about the type of the content
-                httpCon.setRequestProperty("User-Agent", "my-rest-app-v0.1");
                 httpCon.setRequestProperty("Accept", "application/json");
-                httpCon.setRequestProperty("Content-type", "application/json; charset=euc-kr");
+                httpCon.setRequestProperty("Content-type", "application/json; charset=utf-8");
 
                 // OutputStream으로 POST 데이터를 넘겨주겠다는 옵션.
                 httpCon.setDoOutput(true);
@@ -438,11 +475,12 @@ public class PhotoActivity extends AppCompatActivity implements NavigationView.O
 
                 OutputStream os = httpCon.getOutputStream();
                 Log.d("BTSJSON",btsjson);
-                os.write(btsjson.getBytes("euc-kr"));
+                os.write(btsjson.getBytes("utf-8"));
                 os.flush();
 
                 result = "NORMAL";
-
+                Log.i("Response Code",httpCon.getResponseCode()+"");
+                Log.i("Response Message",httpCon.getResponseMessage()+"");
                 // receive response as inputStream
                 try {
                     is = httpCon.getInputStream();

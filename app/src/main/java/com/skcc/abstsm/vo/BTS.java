@@ -19,13 +19,39 @@ public class BTS implements ClusterItem {
     private String enrollDate;
     private String modifyDate;
 
+    public BTS() {
+        this.id = "";
+        this.ssid = "";
+        this.latitude = 0.0;
+        this.longitude = 0.0;
+        this.altitude = 0;
+        this.location = new LatLng(latitude,longitude);
+        this.streetAaddress = "";
+        this.secondaryUnit = "";
+        this.enrollDate = "";
+        this.modifyDate = "";
+    }
+
     public BTS(String id, String ssid, double latitude, double longitude, int altitude, String streetAaddress, String secondaryUnit, String enrollDate, String modifyDate) {
         this.id = id;
         this.ssid = ssid;
         this.latitude = latitude;
         this.longitude = longitude;
         this.altitude = altitude;
-        this.location = new LatLng(latitude, longitude);
+        this.streetAaddress = streetAaddress;
+        this.secondaryUnit = secondaryUnit;
+        this.enrollDate = enrollDate;
+        this.modifyDate = modifyDate;
+        this.location = new LatLng(latitude,longitude);
+    }
+
+    public BTS(String id, String ssid, double latitude, double longitude, int altitude, LatLng location, String streetAaddress, String secondaryUnit, String enrollDate, String modifyDate) {
+        this.id = id;
+        this.ssid = ssid;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.altitude = altitude;
+        this.location = location;
         this.streetAaddress = streetAaddress;
         this.secondaryUnit = secondaryUnit;
         this.enrollDate = enrollDate;
@@ -35,6 +61,14 @@ public class BTS implements ClusterItem {
     @Override
     public LatLng getPosition() {
         return location;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSsid() {
@@ -69,6 +103,14 @@ public class BTS implements ClusterItem {
         this.altitude = altitude;
     }
 
+    public LatLng getLocation() {
+        return location;
+    }
+
+    public void setLocation(LatLng location) {
+        this.location = location;
+    }
+
     public String getStreetAaddress() {
         return streetAaddress;
     }
@@ -101,11 +143,16 @@ public class BTS implements ClusterItem {
         this.modifyDate = modifyDate;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    @Override
+    public String toString() {
+        return  "{\"id\":\"" + id + "\"," +
+                "\"ssid\":\"" + ssid + "\"," +
+                "\"latitude\":" + latitude + "," +
+                "\"longitude\":" + longitude + "," +
+                "\"altitude\":" + altitude + "," +
+                "\"streetAddress\":\"" + streetAaddress + "\"," +
+                "\"secondaryUnit\":\"" + secondaryUnit + "\"," +
+                "\"enrollDate\":\"" + enrollDate + "\"," +
+                "\"modifyDate\":\"" + modifyDate + "\"}";
     }
 }

@@ -57,7 +57,6 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         SearchActivity.HttpAsyncTask httpTask = new SearchActivity.HttpAsyncTask(SearchActivity.this);
         httpTask.execute("http://abtsm-be.paas.sk.com/bts/d1/my/"+ userID, null);
 
@@ -88,9 +87,11 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
 
         if (id == R.id.nav_camera) {
             Intent intent = new Intent(this, PhotoActivity.class);
+            finish();
             startActivity(intent);
         } else if (id == R.id.nav_gallery) {
             Intent intent = new Intent(this, SearchActivity.class);
+            finish();
             startActivity(intent);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

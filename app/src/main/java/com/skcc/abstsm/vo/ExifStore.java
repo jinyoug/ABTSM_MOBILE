@@ -86,7 +86,7 @@ public class ExifStore {
         myAttribute += getTagString(ExifInterface.TAG_MAKE, exif);
         myAttribute += getTagString(ExifInterface.TAG_MODEL, exif);
 
-        ((PhotoActivity) mContext).metadataView.setText(myAttribute);
+        //((PhotoActivity) mContext).metadataView.setText(myAttribute);
     }
 
 
