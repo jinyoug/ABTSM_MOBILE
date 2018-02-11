@@ -39,7 +39,7 @@
                 <EditText
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-
+                    android:text="09801"
                     android:singleLine="true"
                     android:hint="User Name"
                     android:inputType="textEmailAddress" />
@@ -53,9 +53,10 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:text="aaaa"
                     android:singleLine="true"
                     android:hint="Password"
-                    android:inputType="numberPassword" />
+                    android:inputType="textPassword" />
             </android.support.design.widget.TextInputLayout>
 
 

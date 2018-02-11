@@ -22,6 +22,6 @@ public class SendActivity extends AppCompatActivity {
             mWebSettings.setJavaScriptEnabled(true);
 
 
-            mWebView.loadUrl("http://abtsm-fe.paas.sk.com/chatbot/");
+            mWebView.loadUrl("http://abtsm-fe.paas.sk.com/chatbot");
         }
     }
