@@ -93,6 +93,10 @@ public class SearchActivity extends AppCompatActivity implements NavigationView.
             Intent intent = new Intent(this, SearchActivity.class);
             finish();
             startActivity(intent);
+        } else if(id == R.id.nav_send){
+            Intent intent = new Intent(this, SendActivity.class);
+            finish();
+            startActivity(intent);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
